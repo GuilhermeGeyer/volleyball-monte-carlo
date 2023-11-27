@@ -6,6 +6,7 @@ Created on Fri Nov 24 19:58:54 2023
 """
 
 from random import random
+from time import time
 
 
 class Player():
@@ -85,15 +86,31 @@ class Series():
         match.reset()
 
 
-current_score = [int(i) for i in '23 20'.split(' ')]
+def print_state(count, time_diff):
+    print(f'Elapsed time: {round(time() - timer,2)} seconds\n' +
+          f'Number of calculated matches: {series.total_matches}')
+
+
+current_score = [int(i) for i in '24 21'.split(' ')]
 
 p1 = Player(0.5, current_score[0], 'p1')
 p2 = Player(0.5, current_score[1], 'p2')
 match = Match(p1, p2, p1)
 series = Series(match)
+timer = time()
+is_max_count = True
+is_max_time = True
 
-while series.total_matches < 100000:
+while True:
     while match.is_ongoing():
         match.new_point()
     series.match_ended()
+    if is_max_count:
+        if series.total_matches >= 1000000:
+            print_state(series.total_matches, time() - timer)
+            break
+    if is_max_time:
+        if time() - timer > 3:
+            print_state(series.total_matches, time() - timer)
+            break
 series.print_score()
