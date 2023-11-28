@@ -7,6 +7,7 @@ Created on Fri Nov 24 19:58:54 2023
 
 from random import random
 from time import time
+from sys import exit
 
 
 class Player():
@@ -25,6 +26,7 @@ class Match():
         self.player_1 = player_1
         self.player_2 = player_2
         self.current_player = current_player
+        self.starting_current_player = current_player
 
     def change_player(self):
         if self.current_player == self.player_1:
@@ -60,6 +62,7 @@ class Match():
     def reset(self):
         self.player_1.reset()
         self.player_2.reset()
+        self.current_player = self.starting_current_player
 
 
 class Series():
@@ -91,11 +94,23 @@ def print_state(count, time_diff):
           f'Number of calculated matches: {series.total_matches}')
 
 
-current_score = [int(i) for i in '24 21'.split(' ')]
+inputs = [int(i) for i in '24 24 2'.split(' ')]
+current_score = inputs[:2]
+current_player_number = inputs[2]
 
-p1 = Player(0.5, current_score[0], 'p1')
-p2 = Player(0.5, current_score[1], 'p2')
-match = Match(p1, p2, p1)
+score_chance = 0.75
+p1 = Player(score_chance, current_score[0], 'p1')
+p2 = Player(score_chance, current_score[1], 'p2')
+
+if current_player_number == 1:
+    current_player = p1
+elif current_player_number == 2:
+    current_player = p2
+else:
+    print('Invalid player number.')
+    exit()
+
+match = Match(p1, p2, current_player)
 series = Series(match)
 timer = time()
 is_max_count = True
@@ -110,7 +125,7 @@ while True:
             print_state(series.total_matches, time() - timer)
             break
     if is_max_time:
-        if time() - timer > 3:
+        if time() - timer > 1:
             print_state(series.total_matches, time() - timer)
             break
 series.print_score()
