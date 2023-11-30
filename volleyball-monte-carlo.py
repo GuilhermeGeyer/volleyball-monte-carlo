@@ -94,38 +94,40 @@ def print_state(count, time_diff):
           f'Number of calculated matches: {series.total_matches}')
 
 
-inputs = [int(i) for i in '24 24 2'.split(' ')]
-current_score = inputs[:2]
-current_player_number = inputs[2]
+if __name__ == '__main__':
+    inputs = [int(i) for i in '23 20 1'.split(' ')]
+    current_score = inputs[:2]
+    current_player_number = inputs[2]
 
-score_chance = 0.75
-p1 = Player(score_chance, current_score[0], 'p1')
-p2 = Player(score_chance, current_score[1], 'p2')
+    score_chance = 0.75
+    p1 = Player(score_chance, current_score[0], 'p1')
+    p2 = Player(score_chance, current_score[1], 'p2')
 
-if current_player_number == 1:
-    current_player = p1
-elif current_player_number == 2:
-    current_player = p2
-else:
-    print('Invalid player number.')
-    exit()
+    if current_player_number == 1:
+        current_player = p1
+    elif current_player_number == 2:
+        current_player = p2
+    else:
+        print('Invalid player number.')
+        exit()
 
-match = Match(p1, p2, current_player)
-series = Series(match)
-timer = time()
-is_max_count = True
-is_max_time = True
+    match = Match(p1, p2, current_player)
+    series = Series(match)
+    timer = time()
+    is_max_count = True
+    is_max_time = True
 
-while True:
-    while match.is_ongoing():
-        match.new_point()
-    series.match_ended()
-    if is_max_count:
-        if series.total_matches >= 1000000:
-            print_state(series.total_matches, time() - timer)
-            break
-    if is_max_time:
-        if time() - timer > 1:
-            print_state(series.total_matches, time() - timer)
-            break
-series.print_score()
+    while True:
+        while match.is_ongoing():
+            match.new_point()
+        series.match_ended()
+        if is_max_count:
+            if series.total_matches >= 1000000:
+                print_state(series.total_matches, time() - timer)
+                break
+        if is_max_time:
+            if time() - timer > 1:
+                print_state(series.total_matches, time() - timer)
+                break
+    series.print_score()
+    input()
