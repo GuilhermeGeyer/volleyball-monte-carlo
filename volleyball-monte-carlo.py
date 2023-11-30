@@ -22,11 +22,13 @@ class Player():
 
 
 class Match():
-    def __init__(self, player_1, player_2, current_player):
+    def __init__(self, player_1, player_2, current_player,
+                 is_tiebreak):
         self.player_1 = player_1
         self.player_2 = player_2
         self.current_player = current_player
         self.starting_current_player = current_player
+        self.is_tiebreak = is_tiebreak
 
     def change_player(self):
         if self.current_player == self.player_1:
@@ -47,13 +49,17 @@ class Match():
               f'{self.player_2.score} {self.player_2.name}')
 
     def is_ongoing(self):
-        if self.player_1.score > 24:
-            if self.player_2.score < 24:
+        if is_tiebreak:
+            max_value = 14
+        else:
+            max_value = 24
+        if self.player_1.score > max_value:
+            if self.player_2.score < max_value:
                 return False
             if abs(self.player_1.score - self.player_2.score) < 2:
                 return True
             return False
-        if self.player_2.score > 24:
+        if self.player_2.score > max_value:
             if abs(self.player_1.score - self.player_2.score) < 2:
                 return True
             return False
@@ -95,9 +101,14 @@ def print_state(count, time_diff):
 
 
 if __name__ == '__main__':
-    inputs = [int(i) for i in '23 20 1'.split(' ')]
+    inputs = [int(i) for i in '1 0 1'.split(' ')]
     current_score = inputs[:2]
     current_player_number = inputs[2]
+
+    is_tiebreak = True
+    stop_on_end = False
+    max_time = 5
+    max_matches = 100000
 
     score_chance = 0.75
     p1 = Player(score_chance, current_score[0], 'p1')
@@ -111,7 +122,7 @@ if __name__ == '__main__':
         print('Invalid player number.')
         exit()
 
-    match = Match(p1, p2, current_player)
+    match = Match(p1, p2, current_player, is_tiebreak)
     series = Series(match)
     timer = time()
     is_max_count = True
@@ -122,12 +133,13 @@ if __name__ == '__main__':
             match.new_point()
         series.match_ended()
         if is_max_count:
-            if series.total_matches >= 1000000:
+            if series.total_matches >= max_matches:
                 print_state(series.total_matches, time() - timer)
                 break
         if is_max_time:
-            if time() - timer > 1:
+            if time() - timer > max_time:
                 print_state(series.total_matches, time() - timer)
                 break
     series.print_score()
-    input()
+    if stop_on_end:
+        input()
